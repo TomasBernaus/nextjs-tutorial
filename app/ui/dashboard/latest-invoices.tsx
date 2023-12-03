@@ -50,6 +50,9 @@ export default async function LatestInvoices() { // Remove props
                     <p className="hidden text-sm text-gray-500 sm:block">
                       {invoice.email}
                     </p>
+                    <p className="hidden text-sm text-gray-500 sm:block">
+                    {invoice.telf}
+                    </p>
                   </div>
                 </div>
                 <p

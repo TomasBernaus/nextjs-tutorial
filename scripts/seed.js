@@ -16,6 +16,7 @@ async function seedUsers(client) {
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         email TEXT NOT NULL UNIQUE,
+        telf VARCHAR(20),
         password TEXT NOT NULL
       );
     `;
@@ -27,8 +28,8 @@ async function seedUsers(client) {
       users.map(async (user) => {
         const hashedPassword = await bcrypt.hash(user.password, 10);
         return client.sql`
-        INSERT INTO users (id, name, email, password)
-        VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
+        INSERT INTO users (id, name, email, telf, password)
+        VALUES (${user.id}, ${user.name}, ${user.email}, ${user.telf}, ${hashedPassword})
         ON CONFLICT (id) DO NOTHING;
       `;
       }),
@@ -96,6 +97,7 @@ async function seedCustomers(client) {
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL,
+        telf VARCHAR(20) NOT NULL,
         image_url VARCHAR(255) NOT NULL
       );
     `;
@@ -106,8 +108,8 @@ async function seedCustomers(client) {
     const insertedCustomers = await Promise.all(
       customers.map(
         (customer) => client.sql`
-        INSERT INTO customers (id, name, email, image_url)
-        VALUES (${customer.id}, ${customer.name}, ${customer.email}, ${customer.image_url})
+        INSERT INTO customers (id, name, email, telf, image_url)
+        VALUES (${customer.id}, ${customer.name}, ${customer.email}, ${customer.telf}, ${customer.image_url})
         ON CONFLICT (id) DO NOTHING;
       `,
       ),

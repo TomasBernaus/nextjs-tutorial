@@ -41,7 +41,7 @@ export async function fetchLatestInvoices() {
   try {
     // Fetch the last 5 invoices, sorted by date
     const data = await sql<LatestInvoiceRaw>`
-      SELECT invoices.amount, customers.name, customers.image_url, customers.email
+      SELECT invoices.amount, customers.name, customers.image_url, customers.email, customers.telf
       FROM invoices
       JOIN customers ON invoices.customer_id = customers.id
       ORDER BY invoices.date DESC
@@ -112,12 +112,14 @@ export async function fetchFilteredInvoices(
         invoices.status,
         customers.name,
         customers.email,
+        customers.telf,
         customers.image_url
       FROM invoices
       JOIN customers ON invoices.customer_id = customers.id
       WHERE
         customers.name ILIKE ${`%${query}%`} OR
         customers.email ILIKE ${`%${query}%`} OR
+        customers.telf ILIKE ${`%${query}%`} OR
         invoices.amount::text ILIKE ${`%${query}%`} OR
         invoices.date::text ILIKE ${`%${query}%`} OR
         invoices.status ILIKE ${`%${query}%`}
@@ -142,6 +144,7 @@ export async function fetchInvoicesPages(query: string) {
     WHERE
       customers.name ILIKE ${`%${query}%`} OR
       customers.email ILIKE ${`%${query}%`} OR
+      customers.telf ILIKE ${`%${query}%`} OR
       invoices.amount::text ILIKE ${`%${query}%`} OR
       invoices.date::text ILIKE ${`%${query}%`} OR
       invoices.status ILIKE ${`%${query}%`}
@@ -207,6 +210,7 @@ export async function fetchFilteredCustomers(query: string) {
 		  customers.id,
 		  customers.name,
 		  customers.email,
+		  customers.telf,
 		  customers.image_url,
 		  COUNT(invoices.id) AS total_invoices,
 		  SUM(CASE WHEN invoices.status = 'pending' THEN invoices.amount ELSE 0 END) AS total_pending,
@@ -215,8 +219,9 @@ export async function fetchFilteredCustomers(query: string) {
 		LEFT JOIN invoices ON customers.id = invoices.customer_id
 		WHERE
 		  customers.name ILIKE ${`%${query}%`} OR
-        customers.email ILIKE ${`%${query}%`}
-		GROUP BY customers.id, customers.name, customers.email, customers.image_url
+      customers.email ILIKE ${`%${query}%`}
+      customers.telf ILIKE ${`%${query}%`}
+		GROUP BY customers.id, customers.name, customers.email, customers.telf, customers.image_url
 		ORDER BY customers.name ASC
 	  `;
 
@@ -233,9 +238,9 @@ export async function fetchFilteredCustomers(query: string) {
   }
 }
 
-export async function getUser(email: string) {
+export async function getUser(email: string, telf:string) {
   try {
-    const user = await sql`SELECT * FROM users WHERE email=${email}`;
+    const user = await sql`SELECT * FROM users WHERE email=${email} & telf = ${telf}`;
     return user.rows[0] as User;
   } catch (error) {
     console.error('Failed to fetch user:', error);

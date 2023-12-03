@@ -64,6 +64,9 @@ export default async function InvoicesTable({
                   Email
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
+                  Phone
+                </th>
+                <th scope="col" className="px-3 py-5 font-medium">
                   Amount
                 </th>
                 <th scope="col" className="px-3 py-5 font-medium">
@@ -85,7 +88,9 @@ export default async function InvoicesTable({
                 >
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex items-center gap-3">
-                      <Image
+                      {/* <Image */} 
+                      {/* amb image es queixa pq està dins d'un td i no li agrada, per tant, substitum per img */}
+                        <img
                         src={invoice.image_url}
                         className="rounded-full"
                         width={28}
@@ -96,6 +101,9 @@ export default async function InvoicesTable({
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {invoice.email}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-3">
+                  {invoice.telf}
                   </td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {formatCurrency(invoice.amount)}
